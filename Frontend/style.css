@@ -1,0 +1,57 @@
+:root{
+  --bg1:#667eea; --bg2:#764ba2; --card:#ffffff; --accent:#06d6a0;
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;}
+body{
+  margin:0; min-height:100vh; background:linear-gradient(135deg,var(--bg1),var(--bg2));
+  display:flex; align-items:center; justify-content:center; color:#0f172a;
+  padding:24px;
+}
+.app{ width:100%; max-width:1000px; display:grid; gap:18px; }
+
+/* Card */
+.card{
+  background: linear-gradient(180deg, rgba(255,255,255,0.97), rgba(255,255,255,0.94));
+  border-radius:12px; padding:18px; box-shadow:0 12px 30px rgba(2,6,23,0.15);
+  border:1px solid rgba(0,0,0,0.04);
+}
+
+/* header */
+.header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
+.header h1{ margin:0; font-size:1.35rem; color:white; text-shadow:0 3px 12px rgba(0,0,0,0.2) }
+.header p{ margin:0; color:rgba(255,255,255,0.9) }
+
+/* forms */
+label{ display:block; font-weight:600; margin:10px 0 6px; color:#0f172a}
+input[type="text"], input[type="email"], input[type="number"], select, textarea{
+  width:100%; padding:10px 12px; border-radius:8px; border:1px solid #e6e9ee; font-size:0.95rem;
+}
+
+/* buttons */
+.btn{ padding:10px 14px; border-radius:8px; border:none; cursor:pointer; font-weight:700; }
+.btn.primary{ background:linear-gradient(90deg,var(--bg1),var(--bg2)); color:white; }
+.btn.ghost{ background:transparent; border:1px solid rgba(15,23,42,0.06); color:#111; }
+.btn.success{ background:linear-gradient(90deg,#16a34a,#34d399); color:white; }
+
+/* layout columns */
+.row{ display:flex; gap:12px; align-items:center; }
+.col-2{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+/* list */
+.list-item{ padding:10px; border-radius:8px; background:#fff; border:1px solid rgba(0,0,0,0.04); margin-bottom:8px; }
+
+/* small helpers */
+.status{ margin-top:10px; color:#374151; font-weight:600; }
+.hidden{ display:none; }
+
+/* option button style for quiz */
+.option{ padding:12px; border-radius:10px; border:1px solid rgba(15,23,42,0.06); margin-bottom:8px; background:#fff; cursor:pointer; text-align:left; }
+.option.selected{ border:2px solid rgba(102,126,234,0.9); background:linear-gradient(90deg,#f7fbff,#f2f6ff); }
+
+/* responsive */
+@media (max-width:900px){
+  .col-2{ grid-template-columns:1fr; }
+  .app{ padding:12px; }
+}

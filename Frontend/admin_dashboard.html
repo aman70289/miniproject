@@ -1,0 +1,134 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/><title>Admin Dashboard — QuizMaster</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="app">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div class="header"><h1 style="color:white">Admin Dashboard</h1><p style="color:white">Add / Manage Questions</p></div>
+      <div>
+        <button class="btn ghost" onclick="doLogout()">Logout</button>
+      </div>
+    </div>
+
+    <div class="col-2">
+      <div class="card">
+        <h3>Add New Question</h3>
+
+        <label>Category</label>
+        <select id="category"><option>JavaScript</option><option>Science</option><option>History</option><option>Sports</option><option>Technology</option><option>Entertainment</option></select>
+
+        <label>Question</label>
+        <textarea id="question" rows="3"></textarea>
+
+        <div class="col-2">
+          <div>
+            <label>Option 1</label>
+            <input id="op1" type="text"/>
+          </div>
+          <div>
+            <label>Option 2</label>
+            <input id="op2" type="text"/>
+          </div>
+        </div>
+
+        <div class="col-2">
+          <div>
+            <label>Option 3</label>
+            <input id="op3" type="text"/>
+          </div>
+          <div>
+            <label>Option 4</label>
+            <input id="op4" type="text"/>
+          </div>
+        </div>
+
+        <label>Correct Answer (must match exactly one option)</label>
+        <input id="correct" type="text"/>
+
+        <div style="margin-top:12px" class="row">
+          <button class="btn primary" onclick="addQuestion()">Add Question</button>
+          <button class="btn ghost" onclick="loadQuestions()">Refresh List</button>
+        </div>
+
+        <p id="addMsg" class="status"></p>
+      </div>
+
+      <div class="card">
+        <h3>Existing Questions (JavaScript sample)</h3>
+        <div id="questionsList" style="max-height:440px; overflow:auto"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // protect route client-side
+    if(localStorage.getItem('isAdmin')!=='true'){
+      alert('Admin login required');
+      location.href='admin_login.html';
+    }
+
+    const API_BASE = 'http://localhost:5000'; // change if backend at different host
+
+    async function addQuestion(){
+      const data = {
+        category: document.getElementById('category').value,
+        question: document.getElementById('question').value.trim(),
+        option1: document.getElementById('op1').value.trim(),
+        option2: document.getElementById('op2').value.trim(),
+        option3: document.getElementById('op3').value.trim(),
+        option4: document.getElementById('op4').value.trim(),
+        correctAnswer: document.getElementById('correct').value.trim()
+      };
+      const msg = document.getElementById('addMsg');
+      // basic validation
+      if(!data.question || !data.option1 || !data.option2){ msg.textContent='Please fill question and options'; msg.style.color='#ef4444'; return; }
+
+      try{
+        const res = await fetch(API_BASE + '/api/quiz/add', {
+          method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+        });
+        const j = await res.json();
+        if(j.success) {
+          msg.textContent = j.message || 'Question added';
+          msg.style.color = '#059669';
+          // clear
+          document.getElementById('question').value=''; document.getElementById('op1').value=''; document.getElementById('op2').value=''; document.getElementById('op3').value=''; document.getElementById('op4').value=''; document.getElementById('correct').value='';
+          loadQuestions();
+        } else {
+          msg.textContent = j.message || 'Failed';
+          msg.style.color = '#ef4444';
+        }
+      } catch(err){ msg.textContent = 'Server error: '+err.message; msg.style.color='#ef4444'; }
+    }
+
+    async function loadQuestions(){
+      const list = document.getElementById('questionsList');
+      list.innerHTML = '<p class="status">Loading…</p>';
+      try{
+        const res = await fetch(API_BASE + '/api/quiz/JavaScript/50');
+        const j = await res.json();
+        const arr = (j.success && j.questions) ? j.questions : (Array.isArray(j) ? j : []);
+        list.innerHTML = '';
+        if(arr.length===0) list.innerHTML = '<p class="status">No questions found for JavaScript (try different category)</p>';
+        arr.forEach((q, i)=>{
+          const d = document.createElement('div'); d.className='list-item';
+          d.innerHTML = `<div style="font-weight:700">${i+1}. ${escapeHtml(q.question || q.title || '')} </div>
+            <div style="margin-top:6px; font-size:0.95rem">A: ${escapeHtml(q.option1|| q.options?.[0] || '')} &nbsp; B: ${escapeHtml(q.option2|| q.options?.[1] || '')}</div>
+            <div style="margin-top:6px;font-size:0.9rem;color:#6b7280">Correct: ${escapeHtml(q.correctAnswer || q.answer || '')}</div>`;
+          list.appendChild(d);
+        });
+      } catch(err){
+        list.innerHTML = '<p class="status">Failed to load: '+err.message+'</p>';
+      }
+    }
+
+    function doLogout(){ localStorage.removeItem('isAdmin'); location.href='admin_login.html'; }
+    function escapeHtml(s){ if(!s) return ''; return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    loadQuestions();
+  </script>
+</body>
+</html>

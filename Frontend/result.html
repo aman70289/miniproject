@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"/><title>Result</title><link rel="stylesheet" href="style.css"/></head>
+<body>
+  <div class="app" style="max-width:640px">
+    <div class="card">
+      <h2>Last Result</h2>
+      <div id="out"></div>
+      <div style="margin-top:12px" class="row">
+        <button class="btn" onclick="location.href='index.html'">Home</button>
+        <button class="btn primary" onclick="location.href='index.html'">New Quiz</button>
+      </div>
+    </div>
+  </div>
+<script>
+const data = JSON.parse(localStorage.getItem('lastScore')||'null');
+const out = document.getElementById('out');
+if(!data){ out.innerHTML='<p class="status">No result saved.</p>'; }
+else{
+  out.innerHTML = `<div class="result-summary"><div class="score" style="font-weight:800;font-size:2rem;color:#667eea">${data.score} / ${data.total}</div><div>Percentage: ${data.percent}%</div><div style="color:#6b7280">User: ${data.user} • Category: ${data.category}</div></div>`;
+}
+</script>
+</body>
+</html>

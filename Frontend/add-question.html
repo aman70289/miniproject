@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Question</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #6a11cb;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: white;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      padding: 20px;
+      border-radius: 12px;
+      width: 350px;
+      box-shadow: 0px 8px 20px rgba(0,0,0,0.3);
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 6px 0;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
+    button {
+      background: #00ff99;
+      cursor: pointer;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Add Question</h2>
+
+  <select id="category">
+    <option>JavaScript</option>
+    <option>Science</option>
+    <option>History</option>
+    <option>Sports</option>
+    <option>Technology</option>
+  </select>
+
+  <input type="text" id="question" placeholder="Enter Question">
+
+  <input type="text" id="op1" placeholder="Option 1">
+  <input type="text" id="op2" placeholder="Option 2">
+  <input type="text" id="op3" placeholder="Option 3">
+  <input type="text" id="op4" placeholder="Option 4">
+
+  <input type="text" id="correct" placeholder="Correct Answer">
+
+  <button onclick="addQuestion()">Add Question</button>
+
+  <p id="msg"></p>
+</div>
+
+<script>
+  function addQuestion() {
+    const data = {
+      category: document.getElementById("category").value,
+      question: document.getElementById("question").value,
+      option1: document.getElementById("op1").value,
+      option2: document.getElementById("op2").value,
+      option3: document.getElementById("op3").value,
+      option4: document.getElementById("op4").value,
+      correctAnswer: document.getElementById("correct").value
+    };
+
+    fetch("http://localhost:5000/api/quiz/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(data => {
+      document.getElementById("msg").innerText = data.message;
+    })
+    .catch(err => console.log(err));
+  }
+</script>
+
+</body>
+</html>

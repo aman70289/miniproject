@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>QuizMaster — Home</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+  <div class="app" style="max-width:760px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="header"><h1 style="color:white">QuizMaster</h1><p style="color:white">Login and start quiz</p></div>
+      <div>
+        <a href="admin_login.html" style="color:white;text-decoration:none"><button class="btn ghost">Admin</button></a>
+      </div>
+    </div>
+
+    <div class="col-2">
+      <div class="card">
+        <h3>User Login</h3>
+        <label>Your Email</label>
+        <input id="userEmail" type="email" placeholder="you@example.com" />
+        <label>Category</label>
+        <select id="userCategory"><option>JavaScript</option><option>Science</option><option>History</option><option>Sports</option><option>Technology</option><option>Entertainment</option></select>
+        <label>Number of Questions</label>
+        <input id="userCount" type="number" value="10" min="1" max="50" />
+        <div style="margin-top:12px" class="row">
+          <button class="btn primary" onclick="userLogin()">Start Quiz</button>
+        </div>
+        <p id="userMsg" class="status"></p>
+      </div>
+
+      <div class="card">
+        <h3>How it works</h3>
+        <ol>
+          <li>Admin logs in → adds questions.</li>
+          <li>User enters email → chooses category & count → starts quiz.</li>
+          <li>Result shows and is stored locally in browser.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function userLogin(){
+    const email = document.getElementById('userEmail').value.trim();
+    const category = document.getElementById('userCategory').value;
+    const count = parseInt(document.getElementById('userCount').value) || 10;
+    const msg = document.getElementById('userMsg');
+    if(!email){ msg.textContent='Enter your email'; msg.style.color='#ef4444'; return; }
+    if(count<1 || count>100){ msg.textContent='Choose 1–100'; msg.style.color='#ef4444'; return; }
+    // store user & redirect to quiz page with params
+    localStorage.setItem('quizUserEmail', email);
+    localStorage.setItem('quizCategory', category);
+    localStorage.setItem('quizCount', String(count));
+    location.href = 'quiz.html';
+  }
+</script>
+</body>
+</html>

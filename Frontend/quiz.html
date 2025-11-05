@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"/><title>Quiz — QuizMaster</title><link rel="stylesheet" href="style.css"/></head>
+<body>
+  <div class="app" style="max-width:820px">
+    <div class="header" style="margin-bottom:6px"><h1 style="color:white">Quiz</h1></div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div><strong id="userInfo">User</strong></div>
+        <div><span id="progressText">Q 0 / 0</span></div>
+      </div>
+
+      <div id="questionArea" style="margin-top:12px">
+        <h3 id="qText">Loading…</h3>
+        <div id="opts" style="margin-top:12px"></div>
+      </div>
+
+      <div style="display:flex;justify-content:flex-end;margin-top:12px;gap:8px">
+        <button class="btn" id="prevBtn">Prev</button>
+        <button class="btn primary" id="nextBtn">Next</button>
+        <button class="btn success" id="finishBtn">Finish</button>
+      </div>
+
+      <p id="quizMsg" class="status"></p>
+    </div>
+  </div>
+
+<script>
+const API_BASE = 'http://localhost:5000'; // change if backend on other host/port
+let category = localStorage.getItem('quizCategory') || 'JavaScript';
+let count = parseInt(localStorage.getItem('quizCount')||'10');
+let userEmail = localStorage.getItem('quizUserEmail') || 'guest@example.com';
+
+document.getElementById('userInfo').textContent = userEmail + ' • ' + category;
+
+let questions = [], idx = 0, answers = [];
+
+async function load(){
+  document.getElementById('qText').textContent = 'Loading questions...';
+  try{
+    const res = await fetch(`${API_BASE}/api/quiz/${encodeURIComponent(category)}/${encodeURIComponent(count)}`);
+    const j = await res.json();
+    questions = (j.success && j.questions) ? j.questions.map(normalize) : (Array.isArray(j) ? j.map(normalize): []);
+    if(!questions.length) { document.getElementById('qText').textContent = 'No questions found'; return; }
+    answers = new Array(questions.length).fill(null);
+    idx = 0; render();
+  }catch(e){
+    document.getElementById('qText').textContent = 'Failed to load: '+e.message;
+  }
+}
+
+function normalize(q){
+  const opts = [];
+  if(q.option1) opts.push(q.option1);
+  if(q.option2) opts.push(q.option2);
+  if(q.option3) opts.push(q.option3);
+  if(q.option4) opts.push(q.option4);
+  if(Array.isArray(q.options) && q.options.length) return {question:q.question||q.title, options:q.options, correct:q.correctAnswer||q.answer||q.correct};
+  return {question: q.question||q.title, options: opts, correct: q.correctAnswer||q.answer||q.correct};
+}
+
+function render(){
+  const q = questions[idx];
+  document.getElementById('progressText').textContent = `Q ${idx+1} / ${questions.length}`;
+  document.getElementById('qText').textContent = q.question;
+  const opts = document.getElementById('opts'); opts.innerHTML = '';
+  q.options.forEach((o,i)=>{
+    const btn = document.createElement('div'); btn.className='option';
+    btn.innerHTML = `<strong>${String.fromCharCode(65+i)}.</strong> ${o}`;
+    if(answers[idx]===o) btn.classList.add('selected');
+    btn.onclick = ()=>{ answers[idx] = (answers[idx]===o? null : o); render(); };
+    opts.appendChild(btn);
+  });
+}
+
+document.getElementById('prevBtn').onclick = ()=>{ if(idx>0){ idx--; render(); } };
+document.getElementById('nextBtn').onclick = ()=>{ if(idx<questions.length-1){ idx++; render(); } };
+document.getElementById('finishBtn').onclick = finish;
+
+function finish(){
+  let score=0; questions.forEach((q,i)=>{ if(answers[i] && String(answers[i]).trim()===String(q.correct).trim()) score++; });
+  const percent = Math.round((score/questions.length)*100);
+  localStorage.setItem('lastScore', JSON.stringify({score, total:questions.length, percent, user:userEmail, category}));
+  alert(`You scored ${score}/${questions.length} (${percent}%)`);
+  location.href = 'result.html';
+}
+
+load();
+</script>
+</body>
+</html>
