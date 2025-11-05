@@ -1,7 +1,7 @@
 /* script.js
    - Adjust API_BASE if your backend is at a different host/port
 */
-const API_BASE = 'http://localhost:5000'; // change if needed
+const API_BASE = 'https://miniproject-koc2.onrender.com'; // change if needed
 
 // DOM
 const categories = ['JavaScript','Science','History','Sports','Technology','Entertainment'];
