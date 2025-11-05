@@ -75,7 +75,7 @@
       correctAnswer: document.getElementById("correct").value
     };
 
-    fetch("http://localhost:5000/api/quiz/add", {
+    fetch("https://miniproject-koc2.onrender.com/api/quiz/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data)
